@@ -1,0 +1,131 @@
+<html>
+    <head>
+        <style>
+            #dis {
+                width: 26vw;
+                min-height: 26vh;
+                background-color: rgba(125,125,125,0.3);
+            }
+            #testbox {
+                width: 4px;
+                height: 6px;
+                position: absolute;
+                background-color:black;
+                left:0;
+                top:0;
+            }
+        </style>
+    </head>
+
+    <body onload="start()" onkeydown="moveIt(event)" onkeyup="stopIt(event)">
+        <div id="dis">
+            <h1>Dev Log</h1>
+            <p id="keyP"></p>
+            <p id="keyL"></p>
+            <p id="xP"></p>
+            <p id="yP"></p>
+        </div>
+        <div id="testBox">.Here</div>
+
+        <script>
+            /*
+            **PREPARTIONS**
+            -Find the keycode you want to use for the four directions (I have a keycode detector in the dev log)
+            -Edit the keyBttn Array with those keycodes (Right below this text)
+            -Double Check if its working (The true/false are changing appropriately)
+            -You can change the var movement integer to increase or decrease speed (will crash if you set to zero)
+            */
+           var keyBttn = [
+                up = 87,
+                left = 65,
+                down = 83,
+                right = 68
+            ];
+
+            var keyList = [
+                w = false,
+                a = false,
+                s = false,
+                d = false,
+            ];
+            var key;
+            var movement = setInterval(movement, 5);
+            var flipy = false;
+            var x = 0;
+            var y = 0;
+
+            function start() {
+                document.getElementById('keyP').innerHTML = "Key is now - none";
+                document.getElementById('keyL').innerHTML = keyList + " " + flipy;
+                document.getElementById('xP').innerHTML = "x coord: " + x;
+                document.getElementById('yP').innerHTML = "y coord: " + y;
+            }
+
+            function moveIt(event) {
+                key = event.keyCode;
+                flipy = true;
+                endCap();
+            }
+            function stopIt(event) {
+                key = event.keyCode;
+                flipy = false;
+                endCap();
+            }
+            function endCap() {
+                if (flipy === true) {
+                    if (key === keyBttn[0]) {
+                        keyList[0] = true;
+                    }
+                    else if(key === keyBttn[1]) {
+                        keyList[1] = true;
+                    }
+                    else if(key === keyBttn[2]) {
+                        keyList[2] = true;
+                    }
+                    else if(key === keyBttn[3]) {
+                        keyList[3] = true;
+                    }
+                }
+                else if (flipy === false) {
+                    if (key === keyBttn[0]) {
+                        keyList[0] = false;
+                    }
+                    else if(key === keyBttn[1]) {
+                        keyList[1] = false;
+                    }
+                    else if(key === keyBttn[2]) {
+                        keyList[2] = false;
+                    }
+                    else if(key === keyBttn[3]) {
+                        keyList[3] = false;
+                    }
+                }
+
+                document.getElementById('keyP').innerHTML = "Key is now - " + key;
+                document.getElementById('keyL').innerHTML = keyList + " " + flipy;
+            }
+
+
+            function movement() {
+                if (keyList[0] === true && keyList[2] === false) {
+                    y = y - 1;
+                    document.getElementById('testBox').style.top = y;
+                }
+                if (keyList[1] === true && keyList[3] === false) {
+                    x = x - 1;
+                    document.getElementById('testBox').style.left = x;
+                }
+                if (keyList[0] === false && keyList[2] === true) {
+                    y = y + 1;
+                    document.getElementById('testBox').style.top = y;
+                }
+                if (keyList[1] === false && keyList[3] === true) {
+                    x = x + 1;
+                    document.getElementById('testBox').style.left = x;
+                }
+                document.getElementById('xP').innerHTML = "x coord: " + x;
+                document.getElementById('yP').innerHTML = "y coord: " + y;
+            }
+        </script>
+    </body>
+</html>
