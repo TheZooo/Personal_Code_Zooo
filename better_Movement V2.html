@@ -1,0 +1,180 @@
+<html>
+    <head>
+        <style>
+            #dis {
+                width: 26vw;
+                min-height: 36vh;
+                background-color: rgba(125,125,125,0.3);
+            }
+            #testbox {
+                width: 4px;
+                height: 6px;
+                position: absolute;
+                background-color:black;
+                left:0;
+                top:0;
+            }
+        </style>
+    </head>
+
+    <body onload="start()" onkeydown="moveIt(event)" onkeyup="stopIt(event)">
+        <div id="dis">
+            <h1>Dev Log</h1>
+            <p id="keyP"></p>
+            <p id="keyL"></p>
+            <p id="xP"></p>
+            <p id="yP"></p>
+            <p id="xS"></p>
+            <p id="yS"></p>
+            <p id="lagX"></p>
+            <p id="lagY"></p>
+        </div>
+        <div id="testBox">.Here</div>
+
+        <script>
+            /*
+            **PREPARTIONS**
+            -Find the keycode you want to use for the four directions (I have a keycode detector in the dev log)
+            -Edit the keyBttn Array with those keycodes (Right below this text)
+            -Double Check if its working (The true/false are changing appropriately)
+            -You can alter the speed cap for x and y
+            */
+           var keyBttn = [
+                up = 87,
+                left = 65,
+                down = 83,
+                right = 68
+            ];
+
+            var keyList = [
+                w = false,
+                a = false,
+                s = false,
+                d = false,
+            ];
+            var key;
+            var movement = setInterval(movement, 10);
+            var momentum = setInterval(momentum, 50);
+            var prevPos = setInterval(prevPos, 200);
+            var flipy = false;
+            var x = 0;
+            var y = 0;
+            var pastX = 0;
+            var pastY = 0;
+            var xMome = 0;
+            var yMome = 0;
+            var xSpedCap = 5;
+            var ySpedCap = 5;
+
+            function start() {
+                document.getElementById('keyP').innerHTML = "Key is - none";
+                document.getElementById('keyL').innerHTML = keyList + " " + flipy;
+                document.getElementById('xP').innerHTML = "x coord: " + x;
+                document.getElementById('yP').innerHTML = "y coord: " + y;
+                document.getElementById('xS').innerHTML = "x speed: " + xMome;
+                document.getElementById('yS').innerHTML = "y speed: " + yMome;
+                document.getElementById('lagX').innerHTML = "x past coord: " + pastX;
+                document.getElementById('lagY').innerHTML = "y past coord: " + pastY;
+            }
+
+            function moveIt(event) {
+                key = event.keyCode;
+                flipy = true;
+                endCap();
+            }
+            function stopIt(event) {
+                key = event.keyCode;
+                flipy = false;
+                endCap();
+            }
+            function endCap() {
+                if (flipy === true) {
+                    if (key === keyBttn[0]) {
+                        keyList[0] = true;
+                    }
+                    else if(key === keyBttn[1]) {
+                        keyList[1] = true;
+                    }
+                    else if(key === keyBttn[2]) {
+                        keyList[2] = true;
+                    }
+                    else if(key === keyBttn[3]) {
+                        keyList[3] = true;
+                    }
+                }
+                else if (flipy === false) {
+                    if (key === keyBttn[0]) {
+                        keyList[0] = false;
+                    }
+                    else if(key === keyBttn[1]) {
+                        keyList[1] = false;
+                    }
+                    else if(key === keyBttn[2]) {
+                        keyList[2] = false;
+                    }
+                    else if(key === keyBttn[3]) {
+                        keyList[3] = false;
+                    }
+                }
+
+                document.getElementById('keyP').innerHTML = "Key is - " + key;
+                document.getElementById('keyL').innerHTML = keyList + " " + flipy;
+            }
+
+            function prevPos() {
+                pastX = x;
+                pastY = y;
+                document.getElementById('lagX').innerHTML = "x past coord: " + pastX;
+                document.getElementById('lagY').innerHTML = "y past coord: " + pastY;
+            }
+
+            function momentum() {
+                if (xMome < xSpedCap && (keyList[1] === true || keyList[3] === true) && !(keyList[1] === true && keyList[3] === true) ) {
+                    xMome = xMome + 1;
+                }
+                else if (xMome > 0 && !(keyList[1] === true || keyList[3] === true) ) {
+                    xMome = xMome - 1;
+                    if (pastX < x) {
+                        x = x + xMome;
+                    }
+                    else if (pastX > x) {
+                        x = x - xMome;
+                    }
+                }
+                if (yMome < ySpedCap && (keyList[0] === true || keyList[2] === true) && !(keyList[0] === true && keyList[2] === true) ) {
+                    yMome = yMome + 1;
+                }
+                else if (yMome > 0 && !(keyList[0] === true || keyList[2] === true) ) {
+                    yMome = yMome - 1;
+                    if (pastY < y) {
+                        y = y + yMome;
+                    }
+                    else if (pastY > y) {
+                        y = y - yMome;
+                    }
+                }
+            }
+
+            function movement() {
+                if (keyList[0] === true && keyList[2] === false) {
+                    y = y - yMome;
+                }
+                if (keyList[1] === true && keyList[3] === false) {
+                    x = x - xMome;
+                }
+                if (keyList[0] === false && keyList[2] === true) {
+                    y = y + yMome;
+                }
+                if (keyList[1] === false && keyList[3] === true) {
+                    x = x + xMome;
+                }
+                document.getElementById('testBox').style.left = x;
+                document.getElementById('testBox').style.top = y;
+                document.getElementById('xP').innerHTML = "x coord: " + x;
+                document.getElementById('yP').innerHTML = "y coord: " + y;
+                document.getElementById('xS').innerHTML = "x speed: " + xMome;
+                document.getElementById('yS').innerHTML = "y speed: " + yMome;
+            }
+        </script>
+    </body>
+</html>
