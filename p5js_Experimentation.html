@@ -1,0 +1,241 @@
+<html>
+    <head>
+        <script src="p5/p5.min.js"></script>
+        <style>
+            canvas {
+                position: absolute;
+                left:0;
+                top:0;
+                border: 2px rgb(55, 139, 44) solid;
+                z-index: -1;
+            }
+            span {
+                z-index: 1;
+            }
+        </style>
+    </head>
+    <body>
+        <span id="positionX"></span>&nbsp;<span id="positionY"></span><br>
+        <span id="speedX"></span>&nbsp;<span id="speedY"></span><br>
+        <span id="gravitySpeed"></span>&nbsp;<span id="gravityInc"></span><br>
+        <span id="actions"></span>
+        <script>
+            //Note: optimize the jumping mechanic
+
+            var w = window.innerWidth - 4;
+            var h = window.innerHeight - 4;
+            var rectSize = 20; //Squaring the rectangle Size
+            var maxCapX = w - rectSize; //Stops the Rectangle from leaving to the right
+            var minCapX = 0; //Stops left
+            var maxCapY = h - rectSize; //Stops the Rectangle from leaving out the bottom
+            var minCapY = 0; //Stops top
+
+            var posX = 20; //X position of Rectangle
+            var posY = 20; //Y position of Rectangle
+            var prevPosX = 0; //lagged x position
+            var prevPosY = 0; //lagged y position
+
+            var xSpeed = 0; //X speed
+            var xSpeedCap = 5; //X speed cap
+            var xInc = 0; //counter to increment x speed
+            var xIncCap = 3; //cap that x increment happens
+
+            var jumpSpeed = 0; //Jump speed
+            var jumpSpeedCap = 5; //Jump speed cap
+            var jumpSlowInc = 0; //Incremnt for the slowdown
+            var jumpSlowIncCap = 20; //cap that the jump speed decrement happens
+            var jumpBaseDura = 20;
+            var jumpDura = 20; //the duration the jump lasts
+            var jumpBaseCnt = 2;
+            var jumpCnt = 2; //the amount of jumps you can take
+
+            var grounded = false; //checks to see if rectangle is on a floor
+
+            var baseSpeed = 1; //To slowdown the speed
+            var baseGravSped = 1; //To reset gravity speed
+            var gravSped = 1; //gravity speed
+            var gravSpedCap = 8; //gravity speed up cap
+            var gravInc = 0; //counter to increment the gravity speed
+            var gravIncBaseCap = 5; //To reset increment cap
+            var gravIncCap = gravIncBaseCap; //cap that gravity increment happens
+
+            var keyAction = [false,false,false]; //Checking key presses and releases for set actions
+            var IntervalControl = setInterval(controls, 16.5); //Interval for Controls
+            var IntervalPosDelay = setInterval(track, 500); //Interval for tracking position lagged a bit
+            var IntervalCheck = setInterval(check, 5); //Interval for Check (display in body)
+
+            function setup() {
+                createCanvas(w, h);
+            }
+            
+            function draw() {
+                //Background clear
+                background(255);
+                //Gravity
+                if (posY < maxCapY) {
+                    posY += gravSped;
+                    if (gravSped !== gravSpedCap && gravInc === gravIncCap) {
+                        gravSped++;
+                        gravInc = 0;
+                    } else if (gravInc !== gravIncCap && gravSped !== gravSpedCap){
+                        gravInc++;
+                    } 
+                    if (gravInc > gravIncCap) {
+                        gravInc = 0;
+                    }
+                } else if (posY >= maxCapY - gravSpedCap){
+                    gravSped = baseGravSped;
+                }
+                if (posY === maxCapY) {
+                    grounded = true;
+                }
+                //Rectangle that moves
+                stroke(0);
+                strokeWeight(1);
+                rect(posX, posY, rectSize, rectSize);
+                if (mouseIsPressed) {
+                    posX = Math.floor(mouseX);
+                    posY = Math.floor(mouseY);
+                }
+            }
+
+            function keyPressed() {
+                if (keyCode == "37") { //Left Arrow Key
+                    keyAction[0] = true;
+                }
+                if (keyCode == "39") { //Right Arrow Key
+                    keyAction[1] = true;
+                }
+                if (keyCode == "38" ) { //Up Arrow Key
+                    keyAction[2] = true;
+                }
+            }
+
+            function keyReleased() {
+                if (keyCode == "37") { //Left Arrow Key
+                    keyAction[0] = false;
+                }
+                if (keyCode == "39") { //Right Arrow Key
+                    keyAction[1] = false;
+                }
+                if (keyCode == "38") { //Up Arrow Key
+                    keyAction[2] = false;
+                }
+            }
+
+            function track() {
+                prevPosX = posX;
+                prevPosY = posY;
+            }
+            
+            function controls() {
+                if (keyAction[0] == true && posX >= minCapX) { //Move Left
+                    posX -= xSpeed;
+                    if (xSpeed < xSpeedCap && xInc === xIncCap) { //Speed up
+                        xSpeed++;
+                        xInc = 0;
+                    } else {
+                        xInc++;
+                    }
+                }
+
+                if (keyAction[1] == true && posX <= maxCapX) { //Move Right
+                    posX += xSpeed;
+                    if (xSpeed < xSpeedCap && xInc === xIncCap) { //Speed up
+                        xSpeed++;
+                        xInc = 0;
+                    } else {
+                        xInc++;
+                    }
+                }
+
+                if (keyAction[0] == false && keyAction[1] == false) {
+                    if (xSpeed !== 0 && posX > minCapX && posX < maxCapX) { //Slow down
+                        if (xInc === xIncCap) {
+                            xSpeed--;
+                            xInc = 0;
+                        } else {
+                            xInc++;
+                        }
+                        if (prevPosX > posX) {
+                            posX -= xSpeed;
+                        } else if (prevPosX < posX) {
+                            posX += xSpeed;
+                        }
+                    } else if (posX < minCapX + (xSpeedCap/5)) { //If the rect is at high speeds, speed is halted to one
+                        xSpeed = baseSpeed; 
+                    }
+                    if (xSpeed === 0) {
+                        xInc = 0;
+                    }
+                }
+                if (posX <= minCapX) { //Stops rect from passing set walls
+                    posX = minCapX;
+                } else if (posX >= maxCapX) {
+                    posX = maxCapX;
+                }
+                if (posY <= minCapY) {
+                    posY = minCapY;
+                } else if (posY >= maxCapY) {
+                    posY = maxCapY;
+                }
+                if (xInc > xIncCap) {
+                    xInc = 0;
+                }
+
+                if (keyAction[2] == true) {
+                    jumpSlowInc = 0;
+                    if (grounded == true) {
+                        jumpSpeed = jumpSpeedCap;
+                        gravIncCap = jumpDura;
+                        gravSped = 0;
+                        grounded = false;
+                        
+                    } else if (grounded == false && jumpDura !== 0) {
+                        jumpDura--;
+                    }
+                    for (i;i < 1;i++) {
+                        if (jumpCnt > 0) {
+                            jumpCnt--;
+                        }
+                    }
+                    
+                    posY -= jumpSpeed;
+                }
+                if (keyAction[2] == false) {
+                    i = 0;
+                    if (jumpDura === 0 && jumpCnt > 0) {
+                        jumpDura = jumpBaseDura;
+                    }
+                    if (jumpDura > 0) {
+                        jumpDura = 0;
+                    }
+                    if (jumpSpeed > 0 && jumpSlowInc === jumpSlowIncCap) {
+                        jumpSpeed--;
+                        jumpSlowInc = 0;
+                    } else {
+                        jumpSlowInc++;
+                    }
+                    posY -= jumpSpeed;
+                }
+                if (grounded == true) {
+                    gravInc = gravIncBaseCap;
+                    jumpDura = jumpBaseDura;
+                    jumpCnt = jumpBaseCnt;
+                    jumpSpeed = 0;
+                }
+            }
+
+            var d = document;
+            function check() {
+                d.getElementById('positionX').innerHTML = "posX: " + posX + " - " + prevPosX;
+                d.getElementById('positionY').innerHTML = "posY: " + posY + " - " + prevPosY;
+                d.getElementById('speedX').innerHTML = "speedX: " + xSpeed + " - " + xInc;
+                d.getElementById('speedY').innerHTML = "Jump: " + jumpSpeed + " - " + jumpDura + " - " + jumpCnt + " - i: " + i;
+                d.getElementById('gravitySpeed').innerHTML = "gravity: " + gravSped + " GroundedState: " + grounded;
+                d.getElementById('gravityInc').innerHTML = " gravBuildUp: " + gravInc;
+                d.getElementById('actions').innerHTML = "Keys: " + keyAction;
+            }
+        </script>
+    </body>
+</html>
