@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <script src="p5/p5.min.js"></script>
+    <script>
+      var gridX = [];
+      var gridY = [];
+      var gridSize = 30;
+      var cellCountX = 30;
+      var cellCountY = 30;
+      var w = (gridSize * cellCountX) + 1;
+      var h = (gridSize * cellCountY) + 1;
+      var i = 0;
+      
+      function setup() {
+        createCanvas(w, h);
+      }
+      
+      function draw() {
+        background(220);
+            for (i; i < h - 1; i += gridSize) { //setup position of grid
+                gridY.push(i);
+                for (var ii = 0; ii < w; ii += gridSize) {
+                    gridX.push(ii);
+                }
+            }
+            for (var y = 0; y < cellCountY; y++) { //show grid
+                for (var x = 0; x < cellCountX; x++) {
+                    stroke(100);
+                    strokeWeight(1);
+                    noFill();
+                    rect(gridX[x], gridY[y], gridSize, gridSize);
+                }
+            }
+      }
+    </script>
+  </head>
+  <body>
+    
+  </body>
+</html>
