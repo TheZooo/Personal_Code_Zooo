@@ -1,0 +1,85 @@
+<html>
+  <head>
+    <script src="p5/p5.min.js"></script>
+    <script>
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      var diviY = 20;
+      var diviX = 31;
+      var amtY = h/diviY;
+      var amtX = w/diviX;
+      var x = [];
+      var y = [];
+      var size = [];
+      var sizeInc = [];
+      var sizeMax = 150;
+      var sizeChange = 5;
+      var cirDist = [];
+      var selX = 0;
+      var selY = 0;
+      var selPoints = 0;
+      var r;
+      var g;
+      var b;
+      
+      function setup() {
+        createCanvas(w, h);
+        for (var i = 0; i <= h; i+=amtY) {
+          y.push(i);
+        }
+        for (var ii = 0; ii <= w; ii+=amtX) {
+          x.push(ii);
+        }
+        for (var iii = 0; iii < x.length * y.length; iii++) {
+          size.push(10);
+          sizeInc.push(0);
+          cirDist.push(0);
+        }
+        r = Math.floor(Math.random() * 256);
+        g = Math.floor(Math.random() * 256);
+        b = Math.floor(Math.random() * 256);
+      }
+      
+      function draw() {
+        background(255);
+        for (var i = 0; i < size.length; i++) {
+          selX++;
+          selY++;
+          selPoints++;
+          if (selX === x.length) {selX = 0;}
+          if (selY === y.length) {selY = 0;}
+          if (selPoints === size.length) {selPoints = 0;}
+          cirDist[selPoints] = dist(mouseX, mouseY, x[selX], y[selY]);
+          if (cirDist[selPoints] <= sizeMax && sizeInc[selPoints] < sizeMax * 0.1) {
+            sizeInc[selPoints]+=sizeChange;
+          }
+          if (cirDist[selPoints] <= sizeMax * 0.7 && sizeInc[selPoints] < sizeMax * 0.3) {
+            sizeInc[selPoints]+=sizeChange;
+          }
+          if (cirDist[selPoints] <= sizeMax * 0.3 && sizeInc[selPoints] < sizeMax * 0.5) {
+            sizeInc[selPoints]+=sizeChange;
+          }
+          if (cirDist[selPoints] > sizeMax && sizeInc[selPoints] > 0) {
+            sizeInc[selPoints]-=sizeChange;
+          }
+          var sizeSet = size[selPoints] + sizeInc[selPoints];
+          fill(r,g,b,90);
+          noStroke();
+          ellipse(x[selX], y[selY], sizeSet);
+        }
+      }
+      
+    </script>
+    <style>
+      canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <h1 id="dump"></h1>
+  </body>
+</html>
