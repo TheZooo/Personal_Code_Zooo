@@ -1,0 +1,64 @@
+<html>
+  <head>
+    <script src="p5/p5.min.js"></script>
+    <script>
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      var lTxt = ["b", "l", "a", "h"];
+      var inTxt = "";
+      var i = 0;
+      var inc = 0;
+      var incMax = 5;
+
+      function setup() {
+        createCanvas(w, h);
+      }
+      
+      function input() {
+        var ii = lTxt.length;
+        for (var iii = 0; iii < ii; iii++) {
+          lTxt.pop();
+        }
+        inTxt = "";
+        i = 0;
+        inc = 0;
+        
+        var newTxtAmt = document.getElementById('txt').value.length;
+        var newTxt = document.getElementById('txt').value;
+        for (var iv = 0; iv < newTxtAmt; iv++) {
+          lTxt.push(newTxt.charAt(iv));
+        }
+        document.getElementById('txt').value = "";
+      }
+      
+      function draw() {
+        background(220, 220, 220, 50);
+        textSize(20);
+        if (inc === incMax && i < lTxt.length) {
+          inTxt = inTxt + lTxt[i];
+          i++;
+          inc = 0;
+        } else if (inc < incMax && i !== lTxt.length) {
+          inc++;
+        }
+        fill(0, 0, 0, 80);
+        textLeading(12);
+        textSize(20);
+        text(inTxt , 10, 60);
+      }
+      
+    </script>
+    <style>
+      canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: -1;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="txt"></textarea>
+    <button id="bttn" onclick="input()">Input</button>
+  </body>
+</html>
