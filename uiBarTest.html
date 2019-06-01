@@ -1,0 +1,110 @@
+<html>
+    <head>
+        <style>
+            canvas {
+                position: absolute;
+                left: 0;
+                top: 0;
+                z-index: -1;
+            }
+            #testStuff {
+                position: absolute;
+                top: 500px;
+            }
+        </style>
+        <script src="p5/p5.min.js"></script>
+        <script>
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+            var barOne = { //empty bar, damage bar, current bar
+                x: 30,
+                y: 30,
+                r: [50, 250, 250],
+                g: [50, 100, 10],
+                b: [50, 100, 10],
+                max: 600,
+                w: [600, 500, 0],
+                h: 20,
+                reduction: 1
+            };
+            var barCtrlOne = new barCtrlOne();
+
+            function setup() {
+                createCanvas(w, h);
+            }
+            
+            function draw() {
+                background(220);
+                for (var i = 0; i < barOne.w.length; i++) {
+                    noStroke();
+                    fill(barOne.r[i], barOne.g[i], barOne.b[i]);
+                    rect(barOne.x, barOne.y, barOne.w[i] * barOne.reduction, barOne.h);
+                    if (i >= 1) {
+                        if (barOne.w[i] > barOne.max) {
+                            barOne.w[i] = barOne.max;
+                        }
+                        if (barOne.w[i] < 0) {
+                            barOne.w[i] = 0;
+                        }
+                    }
+                }
+                barCtrlOne.update();
+                document.getElementById('max').innerHTML = "Max Bar Length: " + barOne.max;
+                document.getElementById('current').innerHTML = "Current Bar Length: " + barOne.w[2];
+                document.getElementById('set').innerHTML = "Set Bar Length: " + barOne.w[1];
+                document.getElementById('reduce').innerHTML = "Bar Compaction: " + (barOne.reduction * 100) + "%";
+            }
+
+            function barCtrlOne() {
+                this.changeMax = function () {
+                    var chngAmt = Math.abs(document.getElementById('chngMax').value);
+                    barOne.max = chngAmt;
+                    barOne.w[0] = chngAmt;
+                    document.getElementById('chngMax').value = "";
+                }
+                this.change = function () {
+                    var chngAmt = document.getElementById('chngDam').value;
+                    barOne.w[1] = chngAmt;
+                    document.getElementById('chngDam').value = "";
+                }
+                this.reduction = function () {
+                    var chngAmt = document.getElementById('chngReduce').value;
+                    if (chngAmt > 100) {
+                        chngAmt = 100;
+                    }
+                    if (chngAmt < 1) {
+                        chngAmt = 1;
+                    }
+                    barOne.reduction = chngAmt/100;
+                    document.getElementById('chngReduce').value = "";
+                }
+                this.update = function () {
+                    var barDiff = Math.abs(barOne.w[2] - barOne.w[1]);
+                    var barChngRate = 0.07;
+
+                    if (barOne.w[2] > barOne.w[1]) {
+                        barOne.w[2] -= Math.ceil(barDiff * barChngRate);
+                    }
+                    if (barOne.w[2] < barOne.w[1]) {
+                        barOne.w[2] += Math.ceil(barDiff * barChngRate);
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="testStuff">
+            <input type="number" id="chngMax">
+            <button onclick="barCtrlOne.changeMax()">Change Maximum</button> <br>
+            <input type="number" id="chngDam">
+            <button onclick="barCtrlOne.change()">Add/Subtract from bar</button> <br>
+            <input type="number" id="chngReduce">
+            <button onclick="barCtrlOne.reduction()">Compact Bar Size (1-100)</button>
+            <p> Bar Info </p>
+            <p id="max"></p>
+            <p id="current"></p>
+            <p id="set"></p>
+            <p id="reduce"></p>
+        </div>
+    </body>
+</html>
