@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <style>
+            canvas {
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: -1;
+            }
+        </style>
+        <script src="p5/p5.min.js"></script>
+        <script>
+            var w = window.innerWidth;
+            var h = window.innerHeight;
+            var actX = 150;
+            var actY = 150;
+            var actS = 40;
+            var MODactS = actS + 2;
+            var actSBrch = actS * 0.8;
+            var arrActPos = { //Center, Left, Top, Right, Bottom
+                x:[actX, actX - MODactS, actX, actX + MODactS, actX],
+                y:[actY, actY, actY - MODactS, actY, actY + MODactS]
+            };
+            var selector = 0;
+            var baseAct = new baseAct();
+
+            function setup() {
+                createCanvas(w, h);
+            }
+
+            function draw() {
+                background(220);
+                baseAct.show();
+                baseAct.branch();
+            }
+
+            function mouseClicked() {
+                baseAct.work();
+            }
+
+            function baseAct() {
+                this.show = function () {
+                    noStroke();
+                    fill(60);
+                    for (var i = 0; i < arrActPos.x.length; i++) {
+                        rect(arrActPos.x[i], arrActPos.y[i], actS, actS);
+                    }
+                }
+                this.work = function () {
+                    for (var i = 1; i < arrActPos.x.length; i++) {
+                        if (mouseX > arrActPos.x[i] && mouseX < arrActPos.x[i] + actS && mouseY > arrActPos.y[i] && mouseY < arrActPos.y[i] + actS) {
+                            selector = i;
+                            break;
+                        }
+                        else {
+                            selector = 0;
+                        }
+                    }
+                }
+                this.branch = function () {
+                    noStroke();
+                    fill(110);
+                    rectMode(CENTER);
+                    for (var i = 1; i < arrActPos.x.length; i++) {
+                        var actXBrch = arrActPos.x[i] + actS/2;
+                        var actYBrch = arrActPos.y[i] + actS/2;
+                        if (selector === 1 && i !== 3) {
+                            rect(actXBrch - MODactS, actYBrch, actSBrch, actSBrch);
+                        } else if (selector === 2 && i !== 4) {
+                            rect(actXBrch, actYBrch - MODactS, actSBrch, actSBrch);
+                        } else if (selector === 3 && i !== 1) {
+                            rect(actXBrch + MODactS, actYBrch, actSBrch, actSBrch);
+                        } else if (selector === 4 && i !== 2) {
+                            rect(actXBrch, actYBrch + MODactS, actSBrch, actSBrch);
+                        }
+                    }
+                    rectMode(CORNER);
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <p id="dump"></p>
+    </body>
+</html>
