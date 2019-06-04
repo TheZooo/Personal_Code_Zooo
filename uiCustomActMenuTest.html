@@ -61,17 +61,24 @@
                     noStroke();
                     fill(110);
                     rectMode(CENTER);
+                    var dCancel = 1;
                     for (var i = 1; i < arrActPos.x.length; i++) {
+                        dCancel++;
+                        if (dCancel > 3) {
+                            dCancel = 0;
+                        }
                         var actXBrch = arrActPos.x[i] + actS/2;
                         var actYBrch = arrActPos.y[i] + actS/2;
-                        if (selector === 1 && i !== 3) {
-                            rect(actXBrch - MODactS, actYBrch, actSBrch, actSBrch);
-                        } else if (selector === 2 && i !== 4) {
-                            rect(actXBrch, actYBrch - MODactS, actSBrch, actSBrch);
-                        } else if (selector === 3 && i !== 1) {
-                            rect(actXBrch + MODactS, actYBrch, actSBrch, actSBrch);
-                        } else if (selector === 4 && i !== 2) {
-                            rect(actXBrch, actYBrch + MODactS, actSBrch, actSBrch);
+                        var arrActPosBrch = {
+                            x:[actXBrch - MODactS, actXBrch, actXBrch + MODactS, actXBrch],
+                            y:[actYBrch, actYBrch - MODactS, actYBrch, actYBrch + MODactS]
+                        };
+                        if (selector === i) {
+                            for (var ii = 0; ii < arrActPosBrch.x.length; ii++) {
+                                if (dCancel !== ii) {
+                                    rect(arrActPosBrch.x[ii], arrActPosBrch.y[ii], actSBrch, actSBrch);
+                                }
+                            }
                         }
                     }
                     rectMode(CORNER);
