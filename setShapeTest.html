@@ -1,0 +1,69 @@
+<html>
+
+<head>
+    <script src="p5/p5.min.js"></script>
+    <script>
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var setPntX = [];
+        var setPntY = [];
+        var isSetting = false;
+
+        function setup() {
+            createCanvas(w, h);
+        }
+
+        function draw() {
+            background(220);
+            noFill();
+            beginShape();
+            for (var i = 0; i < setPntX.length; i++) {
+                vertex(setPntX[i], setPntY[i]);
+            }
+            endShape(CLOSE);
+            document.getElementById('dump').innerHTML = setPntX + "<br>" + setPntY + "<br>" + setPntX.length;
+        }
+
+        function mousePressed() {
+            if (isSetting && mouseButton === LEFT) {
+                setPntX.push(mouseX);
+                setPntY.push(mouseY);
+            }
+        }
+
+        function keyPressed() {
+            var pntCount = setPntX.length;
+            if (keyCode === 32) {
+                if (isSetting) {
+                    isSetting = false;
+                } else if (!isSetting) {
+                    isSetting = true;
+                }
+            }
+            if (keyCode === 82) {
+                for (var ii = 0; ii < pntCount; ii++) {
+                    setPntX.pop();
+                    setPntY.pop();
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            overflow: hidden;
+        }
+
+        canvas {
+            z-index: -1;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <p id="dump"></p>
+</body>
+
+</html>
