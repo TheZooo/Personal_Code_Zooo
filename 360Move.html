@@ -5,8 +5,8 @@
     <script>
         var w = window.innerWidth;
         var h = window.innerHeight;
-        var carX = 50;
-        var carY = 50;
+        var carX = 60;
+        var carY = 60;
         var carW = 5;
         var carH = 5;
         //---------------------
@@ -37,17 +37,17 @@
         }
 
         function draw() {
-            if (carX < 0) { //BORDERS
-                carX = 0;
+            if (carX < 0 + radius) { //BORDERS
+                carX = 0 + radius;
             }
-            if (carX > w) {
-                carX = w;
+            if (carX > w - radius) {
+                carX = w - radius;
             }
-            if (carY < 0) {
-                carY = 0;
+            if (carY < 0 + radius) {
+                carY = 0 + radius;
             }
-            if (carY > h) {
-                carY = h
+            if (carY > h - radius) {
+                carY = h - radius;
             }
             //------------------------------------------------------------------------------
             if (keys[0] || keys[2]) { //TURNING MECHINISM
@@ -108,7 +108,10 @@
             carY += Number(moveY.toFixed(2));
             //------------------------------------------------------------------------------
             background(220);
-
+            
+            noFill();
+            rect(0 + radius, 0 + radius, w - radius*2, h - radius*2);
+            
             fill(255, 10, 10);
             stroke(0);
             strokeWeight(1);
